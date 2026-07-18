@@ -1,0 +1,12 @@
+# Artefatos de automação / navegador
+.playwright-mcp/
+
+# Backups pesados
+_backup-imagens-originais.zip
+
+# Documentos internos
+ESTUDO-METODO-LP.md
+
+# Sistema operacional
+Thumbs.db
+.DS_Store
