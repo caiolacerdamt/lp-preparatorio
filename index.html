@@ -49,6 +49,16 @@ fbq('track', 'PageView');
 </script>
 <!-- End Utmify Pixel Code -->
 
+<!-- Utmify UTMs Code -->
+<script
+  src="https://cdn.utmify.com.br/scripts/utms/latest.js"
+  data-utmify-prevent-xcod-sck
+  data-utmify-prevent-subids
+  async
+  defer
+></script>
+<!-- End Utmify UTMs Code -->
+
 <script>document.documentElement.classList.add("js")</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1016,54 +1026,6 @@ src="https://www.facebook.com/tr?id=1346343306919239&ev=PageView&noscript=1"
     });
   }, { threshold: 0.08 });
   document.querySelectorAll(".reveal").forEach(function (el) { observer.observe(el); });
-</script>
-
-<!-- Repasse de UTMs / parâmetros de rastreamento para o checkout Cakto -->
-<script>
-(function () {
-  var KEYS = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','src','sck','fbclid'];
-  var STORE = 'cakto_trk';
-
-  function fromURL() {
-    var q = new URLSearchParams(window.location.search), out = {};
-    KEYS.forEach(function (k) { if (q.get(k)) out[k] = q.get(k); });
-    return out;
-  }
-
-  function load() {
-    var url = fromURL();
-    if (Object.keys(url).length) {
-      try { localStorage.setItem(STORE, JSON.stringify(url)); } catch (e) {}
-      return url;
-    }
-    try { return JSON.parse(localStorage.getItem(STORE)) || {}; } catch (e) { return {}; }
-  }
-
-  var params = load();
-  if (!Object.keys(params).length) return;
-
-  function decorate(a) {
-    if (!a || !a.href || a.href.indexOf('cakto.com.br') === -1) return;
-    try {
-      var u = new URL(a.href);
-      Object.keys(params).forEach(function (k) {
-        if (!u.searchParams.has(k)) u.searchParams.set(k, params[k]);
-      });
-      a.href = u.toString();
-    } catch (e) {}
-  }
-
-  function decorateAll() {
-    document.querySelectorAll('a[href*="cakto.com.br"]').forEach(decorate);
-  }
-
-  window.addEventListener('load', decorateAll, { once: true });
-
-  document.addEventListener('click', function (e) {
-    var a = e.target.closest && e.target.closest('a[href*="cakto.com.br"]');
-    if (a) decorate(a);
-  }, true);
-})();
 </script>
 
 </body>
