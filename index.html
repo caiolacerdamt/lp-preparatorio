@@ -1015,6 +1015,43 @@ src="https://www.facebook.com/tr?id=1346343306919239&ev=PageView&noscript=1"
     document.querySelectorAll(".js-checkout").forEach(function (a) { a.href = CHECKOUT_URL; });
   }
 
+  // Repasse do rastreamento do Meta para o checkout da Cakto.
+  // O checkout fica em outro domínio (pay.cakto.com.br) e o cookie do clique não
+  // atravessa sozinho. Aqui levamos o fbclid + os cookies _fbc/_fbp na URL, pra o
+  // pixel/CAPI da Cakto conseguir atribuir a venda ao criativo certo.
+  // Roda no clique (depois de a Utmify já ter aplicado as UTMs), então os dois convivem.
+  (function () {
+    function getCookie(name) {
+      var m = document.cookie.match("(?:^|; )" + name + "=([^;]*)");
+      return m ? decodeURIComponent(m[1]) : "";
+    }
+    function fbclidFromFbc(fbc) {
+      // _fbc tem o formato fb.1.<timestamp>.<fbclid>
+      var parts = (fbc || "").split(".");
+      return parts.length >= 4 ? parts.slice(3).join(".") : "";
+    }
+    function comParametrosFb(href) {
+      try {
+        var u = new URL(href, window.location.origin);
+        var qs = new URLSearchParams(window.location.search);
+        var fbc = getCookie("_fbc");
+        var fbp = getCookie("_fbp");
+        var fbclid = qs.get("fbclid") || fbclidFromFbc(fbc);
+        if (fbclid && !u.searchParams.has("fbclid")) u.searchParams.set("fbclid", fbclid);
+        if (fbc && !u.searchParams.has("fbc")) u.searchParams.set("fbc", fbc);
+        if (fbp && !u.searchParams.has("fbp")) u.searchParams.set("fbp", fbp);
+        return u.toString();
+      } catch (e) {
+        return href;
+      }
+    }
+    document.querySelectorAll(".js-checkout").forEach(function (a) {
+      a.addEventListener("click", function () {
+        a.href = comParametrosFb(a.href);
+      }, true);
+    });
+  })();
+
   // Revelação suave ao rolar (respeita prefers-reduced-motion via CSS)
   var observer = new IntersectionObserver(function (entries) {
     entries.forEach(function (e) {
